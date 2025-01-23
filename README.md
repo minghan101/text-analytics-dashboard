@@ -1,3 +1,8 @@
+# Install the files required
+```
+pip install openai networkx matplotlib graphviz
+```
+
 # Run backend
 
 ## Change directory to backend
