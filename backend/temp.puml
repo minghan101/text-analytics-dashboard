@@ -1,0 +1,37 @@
+
+@startuml
+entity "Suspect" {
+    +name: String
+    +age: Integer
+    +nationality: String
+    +court_sentence: String
+}
+
+entity "Money Laundering Case" {
+    +case_id: Integer
+    +total_assets: String
+    +number_of_charges: Integer
+}
+
+entity "Illegal Activity" {
+    +type: String
+    +description: String
+}
+
+entity "Police Raid" {
+    +date: Date
+    +location: String
+}
+
+entity "Asset" {
+    +value: String
+    +status: String
+}
+
+"Suspect" o-> "Money Laundering Case" : "is involved in" 
+"Suspect" o-> "Illegal Activity" : "committed"
+"Money Laundering Case" o-> "Asset" : "involves"
+"Police Raid" o-> "Suspect" : "arrests"
+"Police Raid" o-> "Money Laundering Case" : "related to"
+"Illegal Activity" o-> "Money Laundering Case" : "is part of"
+@enduml

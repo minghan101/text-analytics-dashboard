@@ -4,15 +4,16 @@ import matplotlib.pyplot as plt
 import json
 from graphviz import Digraph
 from env import OPEN_AI_API_KEY
+from plantuml import PlantUML
 
 client = OpenAI(
   api_key= OPEN_AI_API_KEY
 )
 
-def chat_with_gpt(PROMPT, MaxToken=5000, outputs=2, temperature = 1):
+def chat_with_gpt(PROMPT, MaxToken=5000, outputs=2, temperature = 0.7):
     response = client.chat.completions.create(
         model="gpt-4o-mini",
-        store=True,
+        store=False,
         temperature=temperature,
         messages=[{"role": "user", "content": f"Extract entities and relationships from the following text. "
                 f"For relationships, standardise the use of 'source', 'target', relation'"
@@ -20,7 +21,50 @@ def chat_with_gpt(PROMPT, MaxToken=5000, outputs=2, temperature = 1):
     )
     return response.choices[0].message.content
 
+def chat_for_ERD(input_text, MaxToken=5000, outputs=2, temperature = 0.7):
+    prompt = f"""
+   Extract entities and relationships from the following text and represent them as an Entity-Relationship (ER) diagram using **PlantUML syntax**. 
 
+    Brief Guidelines:
+    - Identify entities and their attributes within `{{}}`.
+    - Identify relationships between entities using connectors like:
+        - `->` for basic relationships (e.g., "is related to", "belongs to", etc.).
+        - `o->`, `<->`, or `o\\--` for more descriptive relationships with cardinality.
+    - Avoid including unnecessary or generic entities
+    - Ensure all unique entities and valid relationships are represented.
+    - Follow correct PlantUML syntax
+    - The diagram must be enclosed with `@startuml` and `@enduml` tags.
+
+    Please respond with valid **PlantUML code only**, without additional explanations or text.
+    
+    user_input: {input_text}
+    """
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        store=False,
+        temperature=temperature,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    
+    initial_response = response.choices[0].message.content
+    cleaned_response = initial_response.strip("```plantuml").strip("```")
+    return cleaned_response
+
+def generate_plant_uml_image(plantuml_code, output_file = "diagram.png"):
+    """
+    Generate an image from PlantUML code and save it to a file.
+    """
+    # Save the PlantUML code to a temporary file
+    temp_file = "temp.puml"
+    with open(temp_file, "w") as f:
+        f.write(plantuml_code)
+
+    # Initialize the PlantUML server
+    plantuml = PlantUML(url="http://www.plantuml.com/plantuml/png/")
+    
+    # Generate the image
+    plantuml.processes_file(temp_file, output_file)
+    print(f"Diagram saved as {output_file}")
 
 def parse_gpt_response(response):
     """Parses GPT response to extract entities and relationships."""
@@ -80,17 +124,21 @@ if __name__ == "__main__":
             break
         
         response = chat_with_gpt(user_input)
+        response_ERD = chat_for_ERD(user_input)
         print("chatbot: " + response)
+        print("ERD ChatBot: " + response_ERD)
     
     # Parse response
         try:
             entities, relationships = parse_gpt_response(response)
-            print(entities)
-            print(relationships)
+            #print(entities)
+            #print(relationships)
             
             # Generate visualizations
             generate_network_graph(entities, relationships)
             generate_er_diagram(entities, relationships)
+            generate_plant_uml_image(response_ERD)
+            
 
             print("Network graph and ER diagram generated successfully!")
         except Exception as e:
