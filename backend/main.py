@@ -10,6 +10,7 @@ client = OpenAI(
   api_key= OPEN_AI_API_KEY
 )
 
+#For Network graph
 def chat_with_gpt(PROMPT, MaxToken=5000, outputs=2, temperature = 0.7):
     response = client.chat.completions.create(
         model="gpt-4o-mini",
@@ -17,6 +18,13 @@ def chat_with_gpt(PROMPT, MaxToken=5000, outputs=2, temperature = 0.7):
         temperature=temperature,
         messages=[{"role": "user", "content": f"Extract entities and relationships from the following text. "
                 f"For relationships, standardise the use of 'source', 'target', relation'"
+                f"Format your response in STRICT JSON with the following structure: "
+                f"{{"
+                f"  \"entities\": [{{\"name\": <entity_name>, \"attributes\": [<attributes>]}}], "
+                f"  \"relationships\": [{{\"source\": <entity_name>, \"target\": <entity_name>, \"relation\": <relationship_type>}}] "
+                f"}}. "
+                f"The name and attributes should be specific to the context given by the input"
+                #f"Exclude any extra information that is unnecessary. "
                 f"Respond in STRICT JSON format with 'entities' and 'relationships' keys only: {PROMPT}"}]
     )
     return response.choices[0].message.content
@@ -27,12 +35,14 @@ def chat_for_ERD(input_text, MaxToken=5000, outputs=2, temperature = 0.7):
 
     Brief Guidelines:
     - Identify entities and their attributes within `{{}}`.
+    - The name and attributes should be specific to the context given by the input
     - Identify relationships between entities using connectors like:
         - `->` for basic relationships (e.g., "is related to", "belongs to", etc.).
         - `o->`, `<->`, or `o\\--` for more descriptive relationships with cardinality.
     - Avoid including unnecessary or generic entities
     - Ensure all unique entities and valid relationships are represented.
-    - Follow correct PlantUML syntax
+    - Ensure no repeated entities.
+    - Follow correct PlantUML syntax. When using names in relationships, they must not be enclosed in quotes unless the names contain spaces
     - The diagram must be enclosed with `@startuml` and `@enduml` tags.
 
     Please respond with valid **PlantUML code only**, without additional explanations or text.
@@ -93,7 +103,7 @@ def generate_network_graph(entities, relationships, output_file="network_graph.p
         G.add_edge(relationship["source"], relationship["target"], label=relationship["relation"])
 
     # Draw the graph
-    pos = nx.spring_layout(G)
+    pos = nx.kamada_kawai_layout(G)
     plt.figure(figsize=(12, 8))
     nx.draw(G, pos, with_labels=True, node_size=4000, node_color="skyblue", font_size=12, font_color="black", font_weight="bold", arrowsize=20)
     edge_labels = nx.get_edge_attributes(G, "label")

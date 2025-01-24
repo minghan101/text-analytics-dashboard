@@ -1,37 +1,46 @@
 
 @startuml
-entity "Suspect" {
-    +name: String
-    +age: Integer
-    +nationality: String
-    +court_sentence: String
+entity "Director-General" as DG {
+    + name: String
+    + age: Integer
+    + nationality: String
 }
 
-entity "Money Laundering Case" {
-    +case_id: Integer
-    +total_assets: String
-    +number_of_charges: Integer
+entity "Ministry of Foreign Affairs" as MFA {
+    + name: String
+    + website: String
 }
 
-entity "Illegal Activity" {
-    +type: String
-    +description: String
+entity "Public Servant" as PS {
+    + name: String
 }
 
-entity "Police Raid" {
-    +date: Date
-    +location: String
+entity "Package" as PKG {
+    + content: String
+    + destination: String
 }
 
-entity "Asset" {
-    +value: String
-    +status: String
+entity "Colleague" as COL {
+    + name: String
+    + position: String
 }
 
-"Suspect" o-> "Money Laundering Case" : "is involved in" 
-"Suspect" o-> "Illegal Activity" : "committed"
-"Money Laundering Case" o-> "Asset" : "involves"
-"Police Raid" o-> "Suspect" : "arrests"
-"Police Raid" o-> "Money Laundering Case" : "related to"
-"Illegal Activity" o-> "Money Laundering Case" : "is part of"
+DG -> MFA : charged with
+DG o-> PS : gives false information to
+MFA o-> PKG : accepted package for dispatch
+PKG -> COL : sent to
+COL -> DG : personal acquaintance of
+
+DG : Gilbert Oh Hin Kwan
+DG : 44
+DG : Singaporean
+
+MFA : Ministry of Foreign Affairs
+MFA : not listed on website
+
+PS : Public Servant
+COL : Dion Loke Cheng Wang
+COL : first secretary (political) of MFA’s Beijing embassy
+PKG : Panadol
+PKG : Beijing
 @enduml
