@@ -159,7 +159,8 @@ def parse_gpt_response(response):
     """Parses GPT response to extract entities and relationships."""
     try:
         cleaned_response = response.strip("```json").strip("```")
-        data = json.loads(cleaned_response)  # Convert JSON format to python dictionary
+        # Try parsing JSON response
+        data = json.loads(cleaned_response) #Convert JSON format to python dictionary
         entities = data.get("entities", [])
         relationships = data.get("relationships", [])
         return entities, relationships
