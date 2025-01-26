@@ -195,6 +195,27 @@ def generate_network_graph(entities, relationships, output_file="static/network_
     plt.savefig(output_file)
     plt.close()
 
+def generate_er_diagram(entities, relationships, output_file="static/er_diagram.er"):
+    """
+    Generates an ER diagram schema in plain text format and saves it to a file.
+    """
+    ensure_static_folder()  # Ensure the static folder exists
+
+    try:
+        with open(output_file, "w") as f:
+            # Write entities
+            for entity in entities:
+                f.write(f"[{entity['name']}]\n")
+            
+            # Write relationships
+            for relationship in relationships:
+                f.write(f"[{relationship['source']}] -- {relationship['relation']} --> [{relationship['target']}]\n")
+        
+        print(f"ER diagram saved to {output_file}")
+    except Exception as e:
+        print(f"Error generating ER diagram: {e}")
+        raise
+
 # Run Flask or Interactive mode
 if __name__ == "__main__":
     mode = input("Run in interactive mode? (yes/no): ").strip().lower()
