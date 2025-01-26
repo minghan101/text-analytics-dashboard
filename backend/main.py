@@ -79,7 +79,7 @@ def generate_plant_uml_image(plantuml_code, output_file = "diagram.png"):
 def parse_gpt_response(response):
     """Parses GPT response to extract entities and relationships."""
     try:
-        cleaned_response = response.strip("```json").strip("```")
+        cleaned_response = response.strip("```json").strip("```") #clean data 
         # Try parsing JSON response
         data = json.loads(cleaned_response) #Convert JSON format to python dictionary
         entities = data.get("entities", [])
