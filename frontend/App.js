@@ -29,7 +29,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Welcome">
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Upload">
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Upload" component={UploadScreen} />
       </Stack.Navigator>

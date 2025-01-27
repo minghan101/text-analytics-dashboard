@@ -23,7 +23,7 @@ const WelcomeScreen = ({ navigation }) => {
             style={styles.customButton} // Style for the custom button
             onPress={() => navigation.navigate('Upload')} // Navigate to the Upload screen
           >
-            <Text style={styles.buttonText}>Go to Upload Screen</Text>
+            <Text style={styles.buttonText}>Start uploading your dataset!</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
