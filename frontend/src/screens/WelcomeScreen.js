@@ -1,71 +1,85 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ImageBackground, ScrollView, TouchableOpacity } from 'react-native';
-import { colors } from '../../assets/colors.js'
-import { fonts } from '../../assets/fonts.js'
+import { View, Text, StyleSheet, ImageBackground, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
+import LottieView from 'lottie-react-native'; // Import LottieView
+import { colors } from '../../assets/colors.js';
+import { fonts } from '../../assets/fonts.js';
+
+const { width } = Dimensions.get('window'); // Get screen dimensions for responsiveness
 
 const WelcomeScreen = ({ navigation }) => {
   return (
-    <ImageBackground
-      source={require('../../assets/background.png')} // Replace with your background image path
-      style={styles.background}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scrollContainer} // Ensures scrolling behavior
-        showsVerticalScrollIndicator={true} // Enables scroll indicator
+    <View style={styles.container}>
+      <ImageBackground
+        source={require('../../assets/background.png')}
+        style={styles.background}
+        resizeMode="cover"
       >
-        <View style={styles.innerContainer}>
-          <Image
-            source={require('../../assets/botsquad.jpg')} // Your existing image
-            style={styles.image}
-          />
-          <Text style={styles.title}>Welcome to Bot Squad's submission!</Text>
-          <TouchableOpacity
-            style={styles.customButton} // Style for the custom button
-            onPress={() => navigation.navigate('Upload')} // Navigate to the Upload screen
-          >
-            <Text style={styles.buttonText}>Start uploading your dataset!</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </ImageBackground>
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={true} // Enable vertical scroll indicator
+        >
+          <View style={styles.innerContainer}>
+            {/* Lottie Animation */}
+            <LottieView
+              source={require('../../assets/lottie/videogame.json')} // Path to Lottie JSON file
+              autoPlay
+              loop
+              style={styles.lottie}
+            />
+
+            {/* Welcome Text */}
+            <Text style={styles.title}>Welcome to Bot Squad's submission!</Text>
+
+            {/* Button */}
+            <TouchableOpacity
+              style={styles.customButton}
+              onPress={() => navigation.navigate('Upload')}
+            >
+              <Text style={styles.buttonText}>Start uploading your dataset!</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </ImageBackground>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   background: {
-    flex: 1, // Ensures background spans entire screen
-    resizeMode: 'cover',
+    flex: 1,
   },
   scrollContainer: {
-    flexGrow: 1, // Allows ScrollView to grow beyond its size
-    justifyContent: 'center', // Centers content when not scrolling
-    paddingVertical: 20, // Adds space at the top and bottom
+    flexGrow: 1,
+    alignItems: 'center', // Center the content
+    paddingBottom: 20, // Add padding to ensure scrollability
   },
   innerContainer: {
-    alignItems: 'center', // Centers content horizontally
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
-    fontFamily: 'Bold', // Custom font for title
-    color: '#fff', // Adjust for better visibility
+    fontSize: 36, // Keep a large, bold text
+    fontFamily: fonts.Bold,
+    color: '#fff',
     marginBottom: 20,
     textAlign: 'center',
   },
-  image: {
-    height: 450, // Large image height
-    width: 450, // Full width
-    marginBottom: 20, // Add space below the image
+  lottie: {
+    width: width * 0.8, // Increased size for the Lottie animation
+    height: width * 0.8,
   },
   customButton: {
-    backgroundColor: colors.neonpink, // Button background color
-    paddingVertical: 12, // Vertical padding
-    paddingHorizontal: 20, // Horizontal padding
-    borderRadius: 8, // Rounded corners
+    backgroundColor: colors.neonpink,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
   },
   buttonText: {
-    fontSize: 15, // Font size for the button text
-    fontFamily: fonts.Bold, // Use your custom Bold font here
-    color: 'white', // Text color
+    fontSize: 16,
+    fontFamily: fonts.Bold,
+    color: '#fff',
     textAlign: 'center',
   },
 });
