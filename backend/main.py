@@ -11,87 +11,58 @@ from PyPDF2 import PdfReader
 from werkzeug.utils import secure_filename
 import pymysql
 import pandas as pd
+from excel_upload import upload_excels_to_db
+from sqlalchemy import create_engine
 
 # Flask app configuration
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'txt'}
 
+db_url = 'mysql+pymysql://sql12759742:wWZqeLA2tI@sql12.freesqldatabase.com:3306/sql12759742?charset=utf8'
+
 # Creating new OpenAI Object using API Key
 client = OpenAI(
     api_key=OPEN_AI_API_KEY
 )
 
-# DATABASE CONFIG
-DB_HOST = "localhost"
-DB_USER = "root"
-DB_PASS = "password"
-DB_NAME = "ArticlesDB"
-
-# Function to connect to the database
-def get_db_connection():
-    return pymysql.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        passwd=DB_PASS,
-        database=DB_NAME,
-        charset="utf8"
-    )
-
-# Setting up database
-def set_up_database():
-    con = pymysql.connect(host=DB_HOST,
-                        user=DB_USER,
-                        passwd=DB_PASS,
-                        charset='utf8')
-    cur = con.cursor()
-    
-    #Create database if it does not exist
-    cur.execute(f'CREATE DATABASE IF NOT EXISTS {DB_NAME} CHARACTER SET utf8')
-    cur.execute(f'USE{DB_NAME}')
-    
-    #Create Articles Table
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS Article (
-            Id INT PRIMARY KEY AUTO_INCREMENT,
-            Link VARCHAR(5000),
-            Text TEXT
-        )
-    """)
-    con.commit()
-    cur.close()
-    con.close()
-
-#Get document
-def read_excel(file):
-    # Read the Excel file into a DataFrame
-    df = pd.read_excel(file)
-
-    # Validate columns
-    if "Link" not in df.columns or "Text" not in df.columns:
-        raise ValueError("Excel file must contain 'Link' and 'Text' columns.")
-
-    # Connect to the database
-    con = get_db_connection()
-    cur = con.cursor()
-
+# Endpoint to fetch all records from the database
+@app.route('/get_records', methods=['GET'])
+def get_records():
     try:
-        # Clear the existing data in the table
-        cur.execute("DELETE FROM Article")
-
-        # Insert data into the database
-        for _, row in df.iterrows():
-            cur.execute(
-                "INSERT INTO Article (Link, Text) VALUES (%s, %s)",
-                (row["Link"], row["Text"])
-            )
-        con.commit()
+        # Connect to the database
+        engine = create_engine(db_url)
+        # Query to fetch all records
+        query = "SELECT * FROM articles"
+        df = pd.read_sql(query, engine)
+        
+        # Convert the DataFrame to JSON
+        records = df.to_dict(orient="records")
+        
+        return jsonify({"records": records}), 200
     except Exception as e:
-        con.rollback()
-        raise e
-    finally:
-        cur.close()
-        con.close()
+        return jsonify({"error": str(e)}), 500
+
+# Endpoint to fetch a specific record by its ID
+@app.route('/get_record/<int:record_id>', methods=['GET'])
+def get_record(record_id):
+    try:
+        # Connect to the database
+        engine = create_engine(db_url)
+        # Query to fetch the specific record by ID
+        query = f"SELECT Text FROM articles WHERE id = {record_id}" #When user click on the record ID, they will select the text from recordID BEFORE parsing into chatgpt
+        df = pd.read_sql(query, engine)
+        
+        if df.empty:
+            return jsonify({"error": "Record not found"}), 404
+        
+        # Convert the DataFrame to JSON
+        record = df.iloc[0].to_dict()
+        
+        return jsonify({"record": record}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 def ensure_static_folder():
     if not os.path.exists("static"):
