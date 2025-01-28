@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from openai import OpenAI
 import networkx as nx
 import matplotlib.pyplot as plt
@@ -13,9 +13,11 @@ import pymysql
 import pandas as pd
 from excel_upload import upload_excels_to_db
 from sqlalchemy import create_engine
+from flask_cors import CORS
 
 # Flask app configuration
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
+CORS(app)  # enable CORS for all routes
 app.config['UPLOAD_FOLDER'] = './uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'txt', 'xlsx'}
 
@@ -67,6 +69,10 @@ def get_record(record_id):
 def ensure_static_folder():
     if not os.path.exists("static"):
         os.makedirs("static")
+        
+@app.route('/static/<filename>')
+def serve_static_files(filename):
+    return send_from_directory(app.static_folder, filename)
 
 def allowed_file(filename):
     """Check if the uploaded file is allowed."""
@@ -280,6 +286,49 @@ def generate_er_diagram(entities, relationships, output_file="static/er_diagram.
     except Exception as e:
         print(f"Error generating ER diagram: {e}")
         raise
+    
+# POST METHOD TO POST THE EXCEL INPUTS FROM THE DATABASE TO CHATGPT
+@app.route('/analyze', methods=['POST'])
+def analyze_text():
+    print("Endpoint reached...")  # endpoint reached
+
+    try:
+        data = request.json
+        print(f"Received data: {data}")  # Log incoming data
+
+        user_input = data.get("text", "")
+        if not user_input:
+            return jsonify({"error": "No text provided"}), 400
+
+        print("Processing input with GPT...")
+        response = chat_with_gpt(user_input)  # Call GPT function
+        response_ERD = chat_for_ERD(user_input)
+
+        print(f"GPT response: {response}")
+        print(f"GPT ERD response: {response_ERD}")
+
+        # Parsing and generation
+        print("Parsing GPT response...")
+        entities, relationships = parse_gpt_response(response)
+
+        print("Generating network graph and ER diagram...")
+        generate_network_graph(entities, relationships)
+        generate_er_diagram(entities, relationships)
+        generate_plant_uml_image(response_ERD)
+
+        print("Diagram generated successfully.")
+
+        return jsonify({
+            "entities": entities,
+            "relationships": relationships,
+            "network_graph_url": "/static/network_graph.png",
+            "diagram_url": "/static/diagram.png",
+        }), 200
+
+    except Exception as e:
+        print(f"Error occurred: {str(e)}")  # Log the error in the console
+        return jsonify({"error": str(e)}), 500
+
 
 # Run Flask or Interactive mode
 if __name__ == "__main__":
