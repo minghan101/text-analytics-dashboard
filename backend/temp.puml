@@ -1,46 +1,62 @@
 
 @startuml
-entity "Director-General" as DG {
-    + name: String
-    + age: Integer
-    + nationality: String
+entity "United Nations" {
+    * Name
 }
 
-entity "Ministry of Foreign Affairs" as MFA {
-    + name: String
-    + website: String
+entity "UNMIK" {
+    * Name
+    * Mission
 }
 
-entity "Public Servant" as PS {
-    + name: String
+entity "Investigation Task Force" {
+    * Name
+    * CaseNumber
 }
 
-entity "Package" as PKG {
-    + content: String
-    + destination: String
+entity "Tender" {
+    * ID
+    * Description
+    * Winner
+    * Amount
 }
 
-entity "Colleague" as COL {
-    + name: String
-    + position: String
+entity "Vendor" {
+    * Name
+    * Address
+    * Owner
+    * Director
+    * ShareholderPercentage
 }
 
-DG -> MFA : charged with
-DG o-> PS : gives false information to
-MFA o-> PKG : accepted package for dispatch
-PKG -> COL : sent to
-COL -> DG : personal acquaintance of
+entity "International Prosecutor" {
+    * Name
+    * Department
+}
 
-DG : Gilbert Oh Hin Kwan
-DG : 44
-DG : Singaporean
+entity "Kosovo Organised Crime Bureau" {
+    * Name
+}
 
-MFA : Ministry of Foreign Affairs
-MFA : not listed on website
+entity "Final Report" {
+    * CaseNumber
+    * Date
+}
 
-PS : Public Servant
-COL : Dion Loke Cheng Wang
-COL : first secretary (political) of MFA’s Beijing embassy
-PKG : Panadol
-PKG : Beijing
+entity "Recommendation" {
+    * ID
+    * Description
+}
+
+"United Nations" o-> "UNMIK" : oversees
+"UNMIK" o-> "Investigation Task Force" : manages
+"Investigation Task Force" o-> "Tender" : investigates
+"Tender" o-> "Vendor" : involves
+"Vendor" o-> "Vendor" : competes with
+"Investigation Task Force" o-> "International Prosecutor" : submits case
+"Investigation Task Force" o-> "Kosovo Organised Crime Bureau" : collaborates with
+"Investigation Task Force" o-> "Final Report" : generates
+"Final Report" o-> "International Prosecutor" : provides as background
+"Recommendation" o-> "UNMIK" : suggests actions
+"Recommendation" o-> "Tender" : affects procurement
 @enduml

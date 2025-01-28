@@ -143,13 +143,19 @@ def generate_plant_uml_image(plantuml_code, output_file = "diagram.png"):
 def upload_file():
     print("Received a file upload request.")  # Debug log
     if 'file' not in request.files:
+        print("No 'file' key in request.files")  # Debug log
         return jsonify({"error": "No file part"}), 400
 
     file = request.files['file']
+    print(f"Filename: {file.filename}")  # Debug log
+    
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
     if file and allowed_file(file.filename):
+        
+        #Creating a directory for PDF and Excel files
+        print("Creating folder in OS..")
         filename = secure_filename(file.filename)
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -168,34 +174,43 @@ def upload_file():
                 print("Extracted text from PDF.")  # Debug log
                 
                 #Else if ends with .xlsx, pipe to excel_upload
+            elif file.filename.endswith(".xlsx"):
+                print("Processing Excel File.")
+                #Uploads Excel File to MySQL Database
+                upload_excel = upload_excels_to_db()
+                print("File uploaded to database. Total File:" + str(upload_excel['total_files']))
+                
             else:
                 print("Processing as a text file.")
                 with open(file_path, 'r', encoding='utf-8') as f:
                     file_content = f.read()
                 print("File content read successfully.")  # Debug log
 
-            # Process the file content with ChatGPT
-            response = chat_with_gpt(file_content)
-            print("Received response from ChatGPT.")  # Debug log
+            #Only text or PDF file can upload here
+            if not file.filename.endswith(".xlsx"):
+                # Process the file content with ChatGPT
+                response = chat_with_gpt(file_content)
+                print("Received response from ChatGPT.")  # Debug log
 
-            entities, relationships = parse_gpt_response(response)
-            erd_code = chat_for_ERD(file_content)
-            print("Parsed response and generated ERD code.")  # Debug log
+                entities, relationships = parse_gpt_response(response)
+                erd_code = chat_for_ERD(file_content)
+                print("Parsed response and generated ERD code.")  # Debug log
 
-            # Generate visualizations
-            ensure_static_folder()
-            generate_network_graph(entities, relationships, output_file="static/network_graph.png")
-            generate_plant_uml_image(erd_code, output_file="static/diagram.png")
-            print("Generated visualizations.")  # Debug log
+                # Generate visualizations
+                ensure_static_folder()
+                generate_network_graph(entities, relationships, output_file="static/network_graph.png")
+                generate_plant_uml_image(erd_code, output_file="static/diagram.png")
+                print("Generated visualizations.")  # Debug log
 
-            return jsonify({
-                "message": "File processed successfully",
-                "entities": entities,
-                "relationships": relationships,
-                "network_graph_url": "/static/network_graph.png",
-                "diagram_url": "/static/diagram.png"
-            }), 200
+                return jsonify({
+                    "message": "File processed successfully",
+                    "entities": entities,
+                    "relationships": relationships,
+                    "network_graph_url": "/static/network_graph.png",
+                    "diagram_url": "/static/diagram.png"
+                }), 200
 
+            print("Excel file uploaded to database.")
         except Exception as e:
             print(f"Error during processing: {e}")  # Debug log
             return jsonify({"error": str(e)}), 500
@@ -204,6 +219,7 @@ def upload_file():
 
 # Parse GPT response
 def parse_gpt_response(response):
+    
     """Parses GPT response to extract entities and relationships."""
     try:
         cleaned_response = response.strip("```json").strip("```")

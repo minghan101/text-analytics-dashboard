@@ -3,6 +3,13 @@ import datetime
 import pandas as pd
 from sqlalchemy import create_engine
 
+
+ALLOWED_EXTENSIONS = {'xlsx'}
+
+def allowed_file(filename):
+    """Check if the uploaded file is allowed."""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 def upload_excels_to_db():
     #Use of online Database MySQL on PHPMyAdmin Database Administrator
     '''
@@ -22,7 +29,7 @@ def upload_excels_to_db():
     #Connect database
     engine = create_engine('mysql+pymysql://sql12759742:wWZqeLA2tI@sql12.freesqldatabase.com:3306/sql12759742?charset=utf8')
     #Database URL: dialect+driver://username:password@host:port/database_name
-    path= r'backend\excel_uploads' #r refers to rowstring
+    path= r'./uploads' #r refers to rowstring
 
     if not os.path.exists(path):
         print(f"Directory '{path}' not found. Creating it now...")
@@ -35,12 +42,27 @@ def upload_excels_to_db():
 
     files=os.listdir(path)
 
+    for file in files:
+        if allowed_file(file):  # Check if the file is an Excel file
+            try:
+                # Load the Excel file and upload its content to the database
+                file_path = os.path.join(path, file)
+                data = pd.read_excel(file_path, header=0)
+                data.to_sql(name='articles', con=engine, index=True, if_exists='replace')
+                num += 1
+                print(f'Imported: {file}')
+            except Exception as e:  
+                print(f"Failed to process {file}. Error: {e}")
+        else:
+            print(f"Skipped non-Excel file: {file}")
+            
+    '''
     for i in files:
         data=pd.read_excel(os.path.join(path,i),header=0)
         data.to_sql(name='articles', con=engine, index=True, if_exists='replace')
         num+=1
         print('Imported:', i)
-        
+    '''
     end_time=datetime.datetime.now()
     print('End:', end_time)
     total_time = end_time-start_time
