@@ -28,7 +28,8 @@ const FileUpload = () => {
 
     const formData = new FormData();
     files.forEach((file, index) => {
-      formData.append(`file_${index}`, file); // Append each file with a unique key
+      formData.append('file', file); // Use the same key 'file' for all uploads - minghan
+      //formData.append(`file_${index}`, file); // Append each file with a unique key
     });
 
     try {
@@ -71,7 +72,7 @@ const FileUpload = () => {
         <input
           type="file"
           ref={fileInputRef} // Reference to the file input
-          accept=".pdf,.png,.jpg,.jpeg"
+          accept=".pdf,.png,.jpg,.jpeg,.xlsx"
           onChange={handleFileChange}
           multiple // Allow multiple file selection
           style={styles.fileInput} // Hide the file input
