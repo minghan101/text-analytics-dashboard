@@ -17,7 +17,7 @@ from sqlalchemy import create_engine
 # Flask app configuration
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = './uploads'
-ALLOWED_EXTENSIONS = {'pdf', 'txt'}
+ALLOWED_EXTENSIONS = {'pdf', 'txt', 'xlsx'}
 
 db_url = 'mysql+pymysql://sql12759742:wWZqeLA2tI@sql12.freesqldatabase.com:3306/sql12759742?charset=utf8'
 
@@ -90,6 +90,7 @@ def chat_with_gpt(PROMPT, MaxToken=5000, outputs=2, temperature=0.7):
     )
     return response.choices[0].message.content
 
+# ERD Diagram bot
 def chat_for_ERD(input_text, MaxToken=5000, outputs=2, temperature = 0.7):
     prompt = f"""
    Extract entities and relationships from the following text and represent them as an Entity-Relationship (ER) diagram using **PlantUML syntax**. 
@@ -165,6 +166,8 @@ def upload_file():
                 for page in reader.pages:
                     file_content += page.extract_text()
                 print("Extracted text from PDF.")  # Debug log
+                
+                #Else if ends with .xlsx, pipe to excel_upload
             else:
                 print("Processing as a text file.")
                 with open(file_path, 'r', encoding='utf-8') as f:
