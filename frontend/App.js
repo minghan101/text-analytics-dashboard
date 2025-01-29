@@ -29,7 +29,13 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Upload">
+      <Stack.Navigator
+        screenOptions={{ 
+          headerShown: false, 
+          cardStyle: { flex: 1 } // Ensure the stack navigator takes up the full screen
+        }}
+        initialRouteName="Upload"
+      >
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Upload" component={UploadScreen} />
       </Stack.Navigator>
