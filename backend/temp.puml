@@ -1,62 +1,39 @@
-
 @startuml
-entity "United Nations" {
-    * Name
+entity SanjayShah {
+    +name: String
+    +age: Integer
+    +status: String
+    +arrestDate: Date
+    +residence: String
+    +accusation: String
 }
 
-entity "UNMIK" {
-    * Name
-    * Mission
+entity Court {
+    +name: String
+    +location: String
+    +caseOutcome: String
+    +sentence: Integer
 }
 
-entity "Investigation Task Force" {
-    * Name
-    * CaseNumber
+entity Country {
+    +name: String
+    +treatySignedDate: Date
 }
 
-entity "Tender" {
-    * ID
-    * Description
-    * Winner
-    * Amount
+entity Extradition {
+    +date: Date
+    +negotiationDuration: String
 }
 
-entity "Vendor" {
-    * Name
-    * Address
-    * Owner
-    * Director
-    * ShareholderPercentage
+entity FraudScheme {
+    +amountClaimed: Float
+    +applicationsSubmitted: Integer
 }
 
-entity "International Prosecutor" {
-    * Name
-    * Department
-}
-
-entity "Kosovo Organised Crime Bureau" {
-    * Name
-}
-
-entity "Final Report" {
-    * CaseNumber
-    * Date
-}
-
-entity "Recommendation" {
-    * ID
-    * Description
-}
-
-"United Nations" o-> "UNMIK" : oversees
-"UNMIK" o-> "Investigation Task Force" : manages
-"Investigation Task Force" o-> "Tender" : investigates
-"Tender" o-> "Vendor" : involves
-"Vendor" o-> "Vendor" : competes with
-"Investigation Task Force" o-> "International Prosecutor" : submits case
-"Investigation Task Force" o-> "Kosovo Organised Crime Bureau" : collaborates with
-"Investigation Task Force" o-> "Final Report" : generates
-"Final Report" o-> "International Prosecutor" : provides as background
-"Recommendation" o-> "UNMIK" : suggests actions
-"Recommendation" o-> "Tender" : affects procurement
+SanjayShah -> Court : faces trial at
+SanjayShah -> Country : extradited from
+Country o-> Extradition : signed treaty
+Extradition -> SanjayShah : extradited on
+SanjayShah o-- FraudScheme : accused of
+FraudScheme -> Court : prosecution claims
 @enduml

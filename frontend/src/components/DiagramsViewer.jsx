@@ -7,9 +7,21 @@ export const DiagramsViewer = () => {
   const [networkGraphUrl, setNetworkGraphUrl] = useState(null);
 
   useEffect(() => {
-    // Set the URLs for the images, these should point to your Flask backend static route
-    setDiagramUrl("http://127.0.0.1:5000/static/diagram.png");
-    setNetworkGraphUrl("http://127.0.0.1:5000/static/network_graph.png");
+    // Function to fetch and update image URLs
+    const fetchImages = async () => {
+      const timestamp = new Date().getTime(); // To prevent caching
+      setDiagramUrl(`http://127.0.0.1:5000/static/diagram.png?${timestamp}`);
+      setNetworkGraphUrl(`http://127.0.0.1:5000/static/network_graph.png?${timestamp}`);
+    };
+
+    // Initial fetch for images
+    fetchImages();
+
+    // Set up polling every 5 seconds to check for updated images
+    const intervalId = setInterval(fetchImages, 5000);
+
+    // Clear the interval on component unmount
+    return () => clearInterval(intervalId);
   }, []);
 
   return (

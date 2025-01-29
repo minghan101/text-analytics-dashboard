@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify, send_from_directory
 from openai import OpenAI
 import networkx as nx
+import matplotlib
 import matplotlib.pyplot as plt
 import json
 from graphviz import Digraph
-from env import OPEN_AI_API_KEY
+from env import OPEN_AI_API_KEY, GEMINI_AI_API_KEY
 from plantuml import PlantUML
 import os
 from PyPDF2 import PdfReader
@@ -20,6 +21,7 @@ app = Flask(__name__, static_folder="static")
 CORS(app)  # enable CORS for all routes
 app.config['UPLOAD_FOLDER'] = './uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'txt', 'xlsx'}
+matplotlib.use('Agg')
 
 db_url = 'mysql+pymysql://sql12759742:wWZqeLA2tI@sql12.freesqldatabase.com:3306/sql12759742?charset=utf8'
 
@@ -97,7 +99,7 @@ def chat_with_gpt(PROMPT, MaxToken=5000, outputs=2, temperature=0.7):
     return response.choices[0].message.content
 
 # ERD Diagram bot
-def chat_for_ERD(input_text, MaxToken=5000, outputs=2, temperature = 0.7):
+def chat_for_ERD(input_text, MaxToken=2000, outputs=2, temperature = 0.7):
     prompt = f"""
    Extract entities and relationships from the following text and represent them as an Entity-Relationship (ER) diagram using **PlantUML syntax**. 
 
@@ -125,14 +127,18 @@ def chat_for_ERD(input_text, MaxToken=5000, outputs=2, temperature = 0.7):
     )
     
     initial_response = response.choices[0].message.content
-    cleaned_response = initial_response.strip("```plantuml").strip("```")
+    #cleaned_response = initial_response.strip("```plantuml").strip("```")
+    cleaned_response = initial_response.replace("```plantuml", "").replace("```", "").strip()
+    print(f"Generated PlantUML Code:\n{cleaned_response}")
     return cleaned_response
 
-def generate_plant_uml_image(plantuml_code, output_file = "diagram.png"):
+def generate_plant_uml_image(plantuml_code, output_file = "static/diagram.png"):
     """
     Generate an image from PlantUML code and save it to a file.
     """
     # Save the PlantUML code to a temporary file
+    
+    print("plantuml code:", plantuml_code)
     temp_file = "temp.puml"
     with open(temp_file, "w") as f:
         f.write(plantuml_code)
@@ -204,17 +210,64 @@ def upload_file():
 
                 # Generate visualizations
                 ensure_static_folder()
-                generate_network_graph(entities, relationships, output_file="static/network_graph.png")
-                generate_plant_uml_image(erd_code, output_file="static/diagram.png")
-                print("Generated visualizations.")  # Debug log
+                
+                retries = 5
+                success_ERD = False
+                success_Network = False
+                
+                #Try for Network graph
+                for attempt in range(retries):
+                    try:
+                        print(f"Attempt {attempt + 1} of {retries}...")
 
-                return jsonify({
-                    "message": "File processed successfully",
-                    "entities": entities,
-                    "relationships": relationships,
-                    "network_graph_url": "/static/network_graph.png",
-                    "diagram_url": "/static/diagram.png"
-                }), 200
+                        print("Generating network graph...")
+                        generate_network_graph(entities, relationships)
+                        
+                        #Will only print this line onwards if generated correctly.
+                        print("Diagram generated successfully.")
+                        success_Network = True
+                        break
+                    except Exception as e:
+                        print(f"Error in generating diagrams: {e}")
+                        # If it's the last retry and still fails, we return the error response
+                        #Create new output and go again
+                        response = chat_with_gpt(user_input)
+                        entities, relationships = parse_gpt_response(response)
+                        if attempt == retries - 1:
+                            return jsonify({"error": "Failed to generate Network diagrams after 5 attempts"}), 500
+                        
+                #Try for ERD
+                for attempt in range(retries):
+                    try:
+                        print(f"Attempt {attempt + 1} of {retries}...")
+
+                        print("Generating ERD...")
+                        generate_er_diagram(entities, relationships)
+                        generate_plant_uml_image(response_ERD)
+                        
+                        print("ER Diagram generated successfully.")
+                        success_ERD = True
+                        break
+                    except Exception as e:
+                        print(f"Error in generating diagrams: {e}")
+                        # If it's the last retry and still fails, we return the error response
+                        # Create new output and go again
+                        response_ERD = chat_for_ERD(user_input)
+                        entities, relationships = parse_gpt_response(response)
+                        if attempt == retries - 1:
+                            return jsonify({"error": "Failed to generate ER diagrams after 5 attempts"}), 500
+
+
+                print("All diagrams generated successfully.")
+
+                if success_ERD and success_Network:
+                    print("Generated documents.")
+                    return jsonify({
+                        "entities": entities,
+                        "relationships": relationships,
+                        "network_graph_url": "/static/network_graph.png",
+                        "diagram_url": "/static/diagram.png",
+                    }), 200
 
             print("Excel file uploaded to database.")
         except Exception as e:
@@ -243,17 +296,25 @@ def parse_gpt_response(response):
 def generate_network_graph(entities, relationships, output_file="static/network_graph.png"):
     """Generates a network graph from entities and relationships."""
     ensure_static_folder()  # Ensure the static folder exists
-
+    print(f"Entities: {entities}")
+    print(f"Relationships: {relationships}")
     G = nx.DiGraph()
 
     # Add entities as nodes using their 'name' field
     for entity in entities:
+        print(f"Adding entity: {entity}")
         G.add_node(entity["name"])
 
     # Add relationships as edges, using the keys from the response
     for relationship in relationships:
+        print(f"Adding relationship: {relationship}")
         G.add_edge(relationship["source"], relationship["target"], label=relationship["relation"])
 
+    if not G.nodes:
+        print("No nodes found in the graph!")
+    if not G.edges:
+        print("No edges found in the graph!")
+        
     # Draw the graph
     pos = nx.kamada_kawai_layout(G)
     plt.figure(figsize=(12, 8))
@@ -261,6 +322,7 @@ def generate_network_graph(entities, relationships, output_file="static/network_
             font_weight="bold", arrowsize=20)
     edge_labels = nx.get_edge_attributes(G, "label")
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels, font_color="red")
+    print("graph drawn")
 
     # Save the graph as an image
     plt.savefig(output_file)
@@ -286,12 +348,15 @@ def generate_er_diagram(entities, relationships, output_file="static/er_diagram.
     except Exception as e:
         print(f"Error generating ER diagram: {e}")
         raise
-    
-# POST METHOD TO POST THE EXCEL INPUTS FROM THE DATABASE TO CHATGPT
+
 @app.route('/analyze', methods=['POST'])
 def analyze_text():
     print("Endpoint reached...")  # endpoint reached
-
+    
+    retries = 5
+    success_ERD = False
+    success_Network = False
+    
     try:
         data = request.json
         print(f"Received data: {data}")  # Log incoming data
@@ -301,6 +366,8 @@ def analyze_text():
             return jsonify({"error": "No text provided"}), 400
 
         print("Processing input with GPT...")
+        
+        #Process the inputs initially
         response = chat_with_gpt(user_input)  # Call GPT function
         response_ERD = chat_for_ERD(user_input)
 
@@ -311,24 +378,63 @@ def analyze_text():
         print("Parsing GPT response...")
         entities, relationships = parse_gpt_response(response)
 
-        print("Generating network graph and ER diagram...")
-        generate_network_graph(entities, relationships)
-        generate_er_diagram(entities, relationships)
-        generate_plant_uml_image(response_ERD)
+        #Try for Network graph
+        for attempt in range(retries):
+            try:
+                print(f"Attempt {attempt + 1} of {retries}...")
 
-        print("Diagram generated successfully.")
+                print("Generating network graph...")
+                generate_network_graph(entities, relationships)
+                
+                #Will only print this line onwards if generated correctly.
+                print("Diagram generated successfully.")
+                success_Network = True
+                break
+            except Exception as e:
+                print(f"Error in generating diagrams: {e}")
+                # If it's the last retry and still fails, we return the error response
+                #Create new output and go again
+                response = chat_with_gpt(user_input)
+                entities, relationships = parse_gpt_response(response)
+                if attempt == retries - 1:
+                    return jsonify({"error": "Failed to generate Network diagrams after 5 attempts"}), 500
+                
+        #Try for ERD
+        for attempt in range(retries):
+            try:
+                print(f"Attempt {attempt + 1} of {retries}...")
 
-        return jsonify({
-            "entities": entities,
-            "relationships": relationships,
-            "network_graph_url": "/static/network_graph.png",
-            "diagram_url": "/static/diagram.png",
-        }), 200
+                print("Generating ERD...")
+                generate_er_diagram(entities, relationships)
+                generate_plant_uml_image(response_ERD)
+                
+                print("ER Diagram generated successfully.")
+                success_ERD = True
+                break
+            except Exception as e:
+                print(f"Error in generating diagrams: {e}")
+                # If it's the last retry and still fails, we return the error response
+                # Create new output and go again
+                response_ERD = chat_for_ERD(user_input)
+                entities, relationships = parse_gpt_response(response)
+                if attempt == retries - 1:
+                    return jsonify({"error": "Failed to generate ER diagrams after 5 attempts"}), 500
+
+
+        print("All diagrams generated successfully.")
+
+        if success_ERD and success_Network:
+            print("Generated documents.")
+            return jsonify({
+                "entities": entities,
+                "relationships": relationships,
+                "network_graph_url": "/static/network_graph.png",
+                "diagram_url": "/static/diagram.png",
+            }), 200
 
     except Exception as e:
         print(f"Error occurred: {str(e)}")  # Log the error in the console
         return jsonify({"error": str(e)}), 500
-
 
 # Run Flask or Interactive mode
 if __name__ == "__main__":
