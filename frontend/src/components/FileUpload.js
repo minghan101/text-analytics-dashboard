@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { colors } from '../../assets/colors.js'; // Ensure this file exists
-import { fonts } from '../../assets/fonts.js'; // Ensure this file exists
+import { colors } from '../../assets/colors.js'; 
+import { fonts } from '../../assets/fonts.js';
 
 const FileUpload = () => {
   const [files, setFiles] = useState([]); // Store multiple files
@@ -10,6 +10,7 @@ const FileUpload = () => {
 
   const fileInputRef = React.createRef(); // Reference to the file input field
 
+  // Handle the file selection from both drag-and-drop and file input
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files); // Convert FileList to Array
     setFiles(selectedFiles);
@@ -17,6 +18,25 @@ const FileUpload = () => {
     setUrls([]);
   };
 
+  // Handle the drag-over event (to allow dropping)
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // You can add any styling for drag over here if you want
+  };
+
+  // Handle the drop event (when files are dropped)
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const selectedFiles = Array.from(e.dataTransfer.files); // Get dropped files
+    setFiles(selectedFiles);
+    setMessage('');
+    setUrls([]);
+  };
+
+  // Handle submit button click
   const handleSubmit = async () => {
     if (files.length === 0) {
       alert('Please select files first!');
@@ -28,8 +48,7 @@ const FileUpload = () => {
 
     const formData = new FormData();
     files.forEach((file, index) => {
-      formData.append('file', file); // Use the same key 'file' for all uploads - minghan
-      //formData.append(`file_${index}`, file); // Append each file with a unique key
+      formData.append('file', file); // Use the same key 'file' for all uploads
     });
 
     try {
@@ -63,7 +82,11 @@ const FileUpload = () => {
   };
 
   return (
-    <div style={styles.container}>
+    <div
+      style={styles.container}
+      onDragOver={handleDragOver} // Add drag over listener
+      onDrop={handleDrop} // Add drop listener
+    >
       {/* File Selection Area */}
       <div
         style={styles.uploadArea}
@@ -77,24 +100,26 @@ const FileUpload = () => {
           multiple // Allow multiple file selection
           style={styles.fileInput} // Hide the file input
         />
-        <p style={styles.instructions}>Drag and drop files here, or click to select files.</p>
+        <p style={styles.instructions}>
+          Drag and drop files here, or click to select files.
+        </p>
       </div>
 
       {/* Preview of Selected Files */}
-        {files.length > 0 && (
-    <div style={styles.previewContainer}>
-      <h4 style={{ fontFamily: fonts.Bold }}> {/* Apply custom font */}
-        {files.length === 1 ? 'Selected File:' : 'Selected Files:'}
-      </h4>
-      <ul>
-        {files.map((file, index) => (
-          <li key={index} style={{ fontFamily: fonts.Regular }}> {/* Apply custom font */}
-            <strong>{file.name}</strong> ({(file.size / 1024).toFixed(2)} KB)
-          </li>
-        ))}
-      </ul>
-    </div>
-  )}
+      {files.length > 0 && (
+        <div style={styles.previewContainer}>
+          <h4 style={{ fontFamily: fonts.Bold }}>
+            {files.length === 1 ? 'Selected File:' : 'Selected Files:'}
+          </h4>
+          <ul>
+            {files.map((file, index) => (
+              <li key={index} style={{ fontFamily: fonts.Regular }}>
+                <strong>{file.name}</strong> ({(file.size / 1024).toFixed(2)} KB)
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Submit Button */}
       <div
@@ -148,17 +173,17 @@ const styles = {
     padding: '20px',
     borderRadius: '10px',
     backgroundColor: '#f9f9f9',
-    width: '70%', // Wider upload area
+    width: '70%',
     height: '150px',
     margin: '0 auto 20px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    cursor: 'pointer', // Change cursor to indicate clickable area
+    cursor: 'pointer',
   },
   fileInput: {
-    display: 'none', // Completely hide the file input field
+    display: 'none',
   },
   instructions: {
     fontSize: '16px',
@@ -168,23 +193,23 @@ const styles = {
   previewContainer: {
     textAlign: 'left',
     margin: '20px auto',
-    width: '80%', // Make the preview container wider
-    maxWidth: '800px', // Ensure it doesn't grow too large
+    width: '80%',
+    maxWidth: '800px',
     backgroundColor: '#f1f1f1',
     padding: '10px',
     borderRadius: '8px',
   },
   customButton: {
-    padding: '5px 5px', // Smaller button size
+    padding: '5px 5px',
     borderRadius: '8px',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100px', // Smaller width for the button
+    width: '100px',
     margin: '10px auto',
   },
   buttonText: {
     color: '#fff',
-    fontSize: '15px', 
+    fontSize: '15px',
   },
 };
 

@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { TouchableOpacity, Text } from 'react-native';
+import { colors } from '../../assets/colors.js';
+import { fonts } from '../../assets/fonts.js';
 
 export const RecordsList = () => {
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedRecord, setSelectedRecord] = useState(null); // Holds the full text of the selected record
-  const [analyzedData, setAnalyzedData] = useState(null); // Stores analysis results
-  const [currentPage, setCurrentPage] = useState(1); // For pagination
-  const recordsPerPage = 10; // Limit to 10 records per page
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [analyzedData, setAnalyzedData] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const recordsPerPage = 10;
 
   const fetchRecords = async () => {
-    setLoading(true); // Show loading while fetching
+    setLoading(true);
     try {
-      const response = await axios.get("http://127.0.0.1:5000/get_records"); // Flask endpoint
+      const response = await axios.get("http://127.0.0.1:5000/get_records");
       setRecords(response.data.records);
       setLoading(false);
     } catch (err) {
@@ -33,9 +36,9 @@ export const RecordsList = () => {
   const handleAnalyzeRecord = async (record) => {
     try {
       const response = await axios.post("http://127.0.0.1:5000/analyze", {
-        text: record.Text, // Pass the record's text to the backend
+        text: record.Text,
       });
-      setAnalyzedData(response.data); // Save the analysis result
+      setAnalyzedData(response.data);
     } catch (err) {
       console.error("Error analyzing record:", err);
     }
@@ -59,112 +62,246 @@ export const RecordsList = () => {
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center py-8">
-      <h1 className="text-2xl font-bold mb-4">Excel Records List</h1>
-      <button
-        onClick={fetchRecords} // Trigger refresh
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
-      >
-        Refresh Records
-      </button>
-      <div className="bg-white p-6 border border-black rounded-lg shadow-md w-3/4">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-black">
+    <div style={styles.container}>
+      <h1 style={styles.title}>Excel Records List</h1>
+      <TouchableOpacity onPress={fetchRecords} style={styles.refreshButton}>
+        <Text style={styles.refreshButtonText}>Refresh Records</Text>
+      </TouchableOpacity>
+      <div style={styles.tableContainer}>
+        <div style={styles.tableWrapper}>
+          <table style={styles.table}>
             <thead>
-              <tr className="bg-gray-300">
-                <th className="border border-black px-4 py-2">Index</th>
-                <th className="border border-black px-4 py-2">Link</th>
-                <th className="border border-black px-4 py-2">Actions</th>
+              <tr style={styles.tableHeader}>
+                <th style={styles.tableCell}>Index</th>
+                <th style={styles.tableCell}>Link</th>
+                <th style={styles.tableCell}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {paginatedRecords.map((record, index) => (
-                <tr key={record.index} className="hover:bg-gray-200">
-                  <td className="border border-black px-4 py-2">{record.index}</td>
-                  <td className="border border-black px-4 py-2">
+              {paginatedRecords.map((record) => (
+                <tr key={record.index} style={styles.tableRow}>
+                  <td style={styles.tableCell}>{record.index}</td>
+                  <td style={styles.tableCell}>
                     <a
                       href={record.Link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-500 underline"
+                      style={styles.tableLink}
                     >
                       {record.Link}
                     </a>
                   </td>
-                  <td className="border border-black px-4 py-2 flex space-x-2">
-                    <button
-                      onClick={() => handleSelectRecord(record)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                  <td style={styles.tableCell}>
+                    <TouchableOpacity
+                      onPress={() => handleSelectRecord(record)}
+                      style={styles.actionButton}
                     >
-                      View Text
-                    </button>
-                    <button
-                      onClick={() => handleAnalyzeRecord(record)}
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                      <Text style={styles.buttonText}>View Text</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => handleAnalyzeRecord(record)}
+                      style={styles.actionButton}
                     >
-                      Analyze
-                    </button>
+                      <Text style={styles.buttonText}>Analyze</Text>
+                    </TouchableOpacity>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        {/* Pagination */}
-        <div className="mt-4 flex justify-between items-center">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        <div style={styles.pagination}>
+          <TouchableOpacity
+            onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className={`px-4 py-2 rounded ${
-              currentPage === 1 ? "bg-gray-300" : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
+            style={{
+              ...styles.paginationButton,
+              backgroundColor: currentPage === 1 ? '#ddd' : colors.neonblue,
+            }}
           >
-            Previous
-          </button>
-          <span className="text-gray-700">
+            <Text style={styles.buttonText}>Previous</Text>
+          </TouchableOpacity>
+          <span style={styles.pageInfo}>
             Page {currentPage} of {totalPages}
           </span>
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+          <TouchableOpacity
+            onPress={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className={`px-4 py-2 rounded ${
-              currentPage === totalPages ? "bg-gray-300" : "bg-blue-500 text-white hover:bg-blue-600"
-            }`}
+            style={{
+              ...styles.paginationButton,
+              backgroundColor: currentPage === totalPages ? '#ddd' : colors.neonblue,
+            }}
           >
-            Next
-          </button>
+            <Text style={styles.buttonText}>Next</Text>
+          </TouchableOpacity>
         </div>
       </div>
+
       {/* Full Text Modal */}
       {selectedRecord && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-3/4 max-h-[80%] overflow-auto">
-            <h2 className="text-xl font-bold mb-4">Record Details</h2>
-            <p className="text-gray-700 whitespace-pre-line mb-4">{selectedRecord.Text}</p>
-            <button
-              onClick={handleCloseDetails}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h2 style={styles.modalTitle}>Record Details</h2>
+            <p style={styles.modalText}>{selectedRecord.Text}</p>
+            <TouchableOpacity
+              onPress={handleCloseDetails}
+              style={styles.modalCloseButton}
             >
-              Close
-            </button>
+              <Text style={styles.buttonText}>Close</Text>
+            </TouchableOpacity>
           </div>
         </div>
       )}
+
       {/* Analysis Modal */}
       {analyzedData && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-3/4 max-h-[80%] overflow-auto">
-            <h2 className="text-xl font-bold mb-4">Analysis Results</h2>
-            <pre className="text-gray-700 mb-4">{JSON.stringify(analyzedData, null, 2)}</pre>
-            <button
-              onClick={handleCloseAnalysis}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h2 style={styles.modalTitle}>Analysis Results</h2>
+            <pre style={styles.modalText}>{JSON.stringify(analyzedData, null, 2)}</pre>
+            <TouchableOpacity
+              onPress={handleCloseAnalysis}
+              style={styles.modalCloseButton}
             >
-              Close
-            </button>
+              <Text style={styles.buttonText}>Close</Text>
+            </TouchableOpacity>
           </div>
         </div>
       )}
     </div>
   );
 };
+
+// Styling
+const styles = {
+  container: {
+    textAlign: 'center',
+    padding: '20px',
+  },
+  title: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: colors.neonblue,
+    fontFamily: fonts.Bold,
+    marginBottom: '10px',
+  },
+  refreshButton: {
+    backgroundColor: colors.neonblue,
+    padding: '8px 16px',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    border: 'none',
+    marginBottom: '20px',
+    width: 'auto',
+    alignItems: 'center',
+  },
+  refreshButtonText: {
+    fontFamily: fonts.Regular,
+    fontSize: '16px',
+    color: '#fff',
+  },
+  tableContainer: {
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    padding: '20px',
+    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
+    width: '100%',
+    maxWidth: '1200px',
+    margin: '0 auto',
+  },
+  tableWrapper: {
+    overflowX: 'auto',
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+  },
+  tableHeader: {
+    backgroundColor: '#f1f1f1',
+  },
+  tableCell: {
+    padding: '4px 10px',
+    border: '1px solid #ddd',
+    fontSize: '14px',
+  },
+  tableRow: {
+    '&:hover': {
+      backgroundColor: '#f9f9f9',
+    },
+  },
+  tableLink: {
+    color: colors.neonblue,
+    textDecoration: 'underline',
+    fontSize: '14px',
+  },
+  actionButton: {
+    backgroundColor: colors.neongreen,
+    color: '#fff',
+    padding: '6px 12px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    border: 'none',
+    margin: '5px',
+  },
+  buttonText: {
+    fontFamily: fonts.Regular,
+    fontSize: '14px',
+    color: '#fff',
+  },
+  pagination: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: '20px',
+  },
+  paginationButton: {
+    padding: '6px 12px',
+    color: '#fff',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    fontSize: '14px',
+  },
+  pageInfo: {
+    fontSize: '14px',
+    alignSelf: 'center',
+  },
+  modalOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: '8px',
+    padding: '20px',
+    width: '80%',
+    maxWidth: '800px',
+    maxHeight: '80%',
+    overflowY: 'auto',
+  },
+  modalTitle: {
+    fontSize: '20px',
+    fontWeight: 'bold',
+    marginBottom: '10px',
+  },
+  modalText: {
+    fontSize: '16px',
+    color: '#333',
+  },
+  modalCloseButton: {
+    backgroundColor: colors.neonred,
+    color: '#fff',
+    padding: '6px 12px',
+    borderRadius: '5px',
+    cursor: 'pointer',
+    border: 'none',
+    marginTop: '20px',
+  },
+};
+
+export default RecordsList;
