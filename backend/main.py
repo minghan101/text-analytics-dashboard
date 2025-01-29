@@ -5,12 +5,11 @@ import matplotlib
 import matplotlib.pyplot as plt
 import json
 from graphviz import Digraph
-from env import OPEN_AI_API_KEY, GEMINI_AI_API_KEY
+from env import OPEN_AI_API_KEY, DB_URL
 from plantuml import PlantUML
 import os
 from PyPDF2 import PdfReader
 from werkzeug.utils import secure_filename
-import pymysql
 import pandas as pd
 from excel_upload import upload_excels_to_db
 from sqlalchemy import create_engine
@@ -23,7 +22,7 @@ app.config['UPLOAD_FOLDER'] = './uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'txt', 'xlsx'}
 matplotlib.use('Agg')
 
-db_url = 'mysql+pymysql://sql12759742:wWZqeLA2tI@sql12.freesqldatabase.com:3306/sql12759742?charset=utf8'
+db_url = DB_URL
 
 # Creating new OpenAI Object using API Key
 client = OpenAI(
