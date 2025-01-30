@@ -1,39 +1,56 @@
 @startuml
-entity SanjayShah {
+entity "Investigation Task Force" as ITF {
     +name: String
-    +age: Integer
-    +status: String
-    +arrestDate: Date
-    +residence: String
-    +accusation: String
+    +caseNumber: String
 }
 
-entity Court {
+entity "United Nations" as UN {
     +name: String
-    +location: String
-    +caseOutcome: String
-    +sentence: Integer
 }
 
-entity Country {
+entity "Prishtina International Airport" as PIA {
     +name: String
-    +treatySignedDate: Date
 }
 
-entity Extradition {
-    +date: Date
-    +negotiationDuration: String
+entity "Air Traffic Control Services" as ATCS {
+    +name: String
+    +accountBalance: Float
 }
 
-entity FraudScheme {
-    +amountClaimed: Float
-    +applicationsSubmitted: Integer
+entity "Public Enterprise Airport Prishtina" as PEAP {
+    +name: String
 }
 
-SanjayShah -> Court : faces trial at
-SanjayShah -> Country : extradited from
-Country o-> Extradition : signed treaty
-Extradition -> SanjayShah : extradited on
-SanjayShah o-- FraudScheme : accused of
-FraudScheme -> Court : prosecution claims
+entity "Kosovo Trust Agency" as KTA {
+    +name: String
+}
+
+entity "Division Manager" as DM {
+    +name: String
+}
+
+entity "Finance Officer" as FO {
+    +name: String
+    +position: String
+}
+
+entity "Official" as O {
+    +name: String
+}
+
+entity "Forensic Audit Report" as FAR {
+    +reportDate: Date
+}
+
+ITF -> UN : "is part of"
+ITF -> ATCS : "investigates"
+ATCS o-> PIA : "operates at"
+ATCS o-> PEAP : "is audited by"
+KTA o-> PIA : "oversees"
+KTA o-> ATCS : "manages"
+DM o-> ATCS : "supervises"
+FO o-> ATCS : "works in"
+FO o-> DM : "reports to"
+O o-> PIA : "works at"
+FAR -> ATCS : "audits"
 @enduml

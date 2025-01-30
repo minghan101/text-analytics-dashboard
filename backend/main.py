@@ -230,7 +230,7 @@ def upload_file():
                         print(f"Error in generating diagrams: {e}")
                         # If it's the last retry and still fails, we return the error response
                         #Create new output and go again
-                        response = chat_with_gpt(user_input)
+                        response = chat_with_gpt(file_content)
                         entities, relationships = parse_gpt_response(response)
                         if attempt == retries - 1:
                             return jsonify({"error": "Failed to generate Network diagrams after 5 attempts"}), 500
@@ -242,7 +242,7 @@ def upload_file():
 
                         print("Generating ERD...")
                         generate_er_diagram(entities, relationships)
-                        generate_plant_uml_image(response_ERD)
+                        generate_plant_uml_image(erd_code)
                         
                         print("ER Diagram generated successfully.")
                         success_ERD = True
@@ -251,7 +251,7 @@ def upload_file():
                         print(f"Error in generating diagrams: {e}")
                         # If it's the last retry and still fails, we return the error response
                         # Create new output and go again
-                        response_ERD = chat_for_ERD(user_input)
+                        erd_code = chat_for_ERD(file_content)
                         entities, relationships = parse_gpt_response(response)
                         if attempt == retries - 1:
                             return jsonify({"error": "Failed to generate ER diagrams after 5 attempts"}), 500
@@ -435,7 +435,13 @@ def analyze_text():
         print(f"Error occurred: {str(e)}")  # Log the error in the console
         return jsonify({"error": str(e)}), 500
 
-# Run Flask or Interactive mode
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+#********FOR TESTING THEN UNCOMMENT ONLY*******
+'''
+# Run Flask or Interactive mode 
 if __name__ == "__main__":
     mode = input("Run in interactive mode? (yes/no): ").strip().lower()
     if mode == "yes":
@@ -461,3 +467,4 @@ if __name__ == "__main__":
                 print("Error in processing response:", str(e))
     else:
         app.run(debug=True)
+'''

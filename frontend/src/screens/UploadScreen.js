@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
 import FileUpload from '../components/FileUpload';
 import { colors } from '../../assets/colors.js';
 import { fonts } from '../../assets/fonts.js';
@@ -7,51 +7,58 @@ import { RecordsList } from "../components/RecordsList";
 import { DiagramsViewer } from '../components/DiagramsViewer';
 
 const UploadScreen = ({ navigation }) => {
-
     // Handle record selection
     const handleSelectRecord = (recordId) => {
       console.log("Selected Record ID:", recordId);
-      // Optionally navigate or perform another action
-      // navigation.navigate('RecordText', { recordId });
     };
 
-  return (
-    <View style={styles.container}>
-      {/* Back Button */}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Welcome")}>
-        <Text style={styles.backButtonText}>← Back</Text>
-      </TouchableOpacity>
+    return (
+        <ImageBackground 
+            source={{ uri: "https://i.pinimg.com/originals/cc/e9/28/cce9286056ef159d91a74de07ae24e6a.gif" }} 
+            style={styles.background}
+        >
+            <View style={styles.container}>
+                {/* Back Button */}
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate("Welcome")}>
+                    <Text style={styles.backButtonText}>← Back</Text>
+                </TouchableOpacity>
 
-      {/* Scrollable content */}
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        { /* Upload Area */}
-        <Text style={styles.title}>Upload Your Dataset</Text>
-        <FileUpload />
+                {/* Scrollable content */}
+                <ScrollView contentContainerStyle={styles.scrollContent}>
+                    {/* Upload Area */}
+                    <Text style={styles.title}>Upload Your Dataset</Text>
+                    <FileUpload />
 
-        {/* Records List */}
-        <RecordsList onSelectRecord={handleSelectRecord} />  {/* Pass the function for selecting a record */}
+                    {/* Records List */}
+                    <RecordsList onSelectRecord={handleSelectRecord} />  
 
-        {/* Display the Diagrams */}
-        <DiagramsViewer />  {/* display the dynamic diagrams */}
-      </ScrollView>
-    </View>
-  );
+                    {/* Display the Diagrams */}
+                    <DiagramsViewer />  
+                </ScrollView>
+            </View>
+        </ImageBackground>
+    );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1, 
+    resizeMode: "cover", // Ensures the GIF covers the screen
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)', // Optional overlay for better text visibility
+    /* backgroundColor: '#f0f0f0',*/
   },
   backButton: {
     position: 'absolute',
-    top: 40, // Adjust for your design
-    left: 20, // Adjust for your design
+    top: 40, 
+    left: 20, 
     backgroundColor: colors.neonpink,
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 8,
-    zIndex: 1, // Ensure it's above the scrollable content
+    zIndex: 1, 
   },
   backButtonText: {
     color: '#fff',
@@ -59,15 +66,15 @@ const styles = StyleSheet.create({
     fontFamily: fonts.Bold,
   },
   title: {
-    fontSize: 24,
+    fontSize: 48,
     fontFamily: fonts.Bold, 
     color: colors.neonblue,
     marginBottom: 20,
   },
   scrollContent: {
-    flexGrow: 1,  // Ensure scrollable content grows to take available space
-    paddingTop: 100, // Adjust for padding so it doesn't overlap with back button
-    paddingBottom: 20, // Ensure some space at the bottom
+    flexGrow: 1,
+    paddingTop: 100, 
+    paddingBottom: 20,
     alignItems: 'center',
   },
 });
