@@ -1,82 +1,126 @@
-# Install the files required
-```
-pip install openai networkx matplotlib graphviz
+# BOTSQUAD - Text Analytics AI Dashboard
+
+<img width="1127" alt="image" src="https://github.com/user-attachments/assets/4f3816a7-ca10-41f0-bc14-aa2ff39671df" />
+
+## Overview
+Text-Analytics-AI-Dashboard is an interactive AI-powered dashboard that allows users to upload and analyze text datasets with ease. The project includes a React Native frontend for seamless user interaction and a Python backend for processing the uploaded data.
+
+## Features
+
+- User-friendly interface for uploading datasets
+- AI-driven text analysis
+- Visualization tools for insights
+- Mobile-friendly design using React Native
+
+Figure 1: Uploading of Datasets
+<img width="1114" alt="image" src="https://github.com/user-attachments/assets/5b1110d1-5608-4b87-8ec8-f3f118bfc2ff" />
+
+Figure 2: AI-Driven Text Analysis - ER Diagram + Complex Network Graph
+<img width="1110" alt="image" src="https://github.com/user-attachments/assets/2772690c-0c87-4e97-a860-aa0b09bfca05" />
+
+---
+
+## Installation
+
+### Backend (Python)
+
+Ensure you have Python 3.8+ installed, then set up your environment:
+
+```bash
+# Clone the repository
+git clone https://github.com/your-repo/text-analytics-dashboard.git
+cd text-analytics-dashboard
+
+# Create a virtual environment
+python -m venv env
+source env/bin/activate  # On Windows use `env\Scripts\activate`
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-# Run backend
+### Frontend (React Native)
 
-## Change directory to backend
+Ensure you have **Node.js** and **Expo CLI** installed:
+
+```bash
+# Install Expo CLI
+yarn global add expo-cli  # Or use npm install -g expo-cli
+
+# Navigate to the React Native app directory
+cd frontend
+
+# Install dependencies
+yarn install  # Or use npm install
 ```
+
+---
+
+## Usage
+
+### Running the Backend
+
+Start the Python server:
+
+```bash
 cd backend
-```
-
-## Run backend
-```
 python main.py
-You: {INPUT YOUR DATASET IN TEXT}
 ```
 
-# Frontend: Getting Started with Create React App
-Not ready yet
+### Running the Frontend
 
-## Available Scripts
+Start the React Native app:
 
-In the project directory, you can run:
+```bash
+cd frontend
+expo start
+```
 
-### `npm start`
+Scan the QR code in the Expo Go app to run on your mobile device. or go to the link provided.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure
 
-### `npm run build`
+```
+Text-Analytics-AI-Dashboard/
+│── backend/
+│   ├── main.py
+│   ├── data_processing.py
+│   ├── requirements.txt
+│
+│── frontend/
+│   ├── App.js
+│   ├── src/
+│   │   ├── screens/
+│   │   │   ├── WelcomeScreen.js
+│   │   │   ├── UploadScreen.js
+│   │   ├── components/
+│   ├── assets/
+│
+│── README.md
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Example Workflow
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Open the app and navigate to the upload screen.
+2. Select and upload a text dataset.
+3. View the processed results and analytics on the dashboard.
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Contributors
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Chia Ming Han [https://github.com/minghan101]
+- Bryan Ng Wen Hann [https://github.com/Bryng23]
+- Delia Tan Hwee Cheng [https://github.com/delulu04]
+- Cheng Lynn [https://github.com/notlynnnn]
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## License
 
-## Learn More
+This project is licensed under the MIT License.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
