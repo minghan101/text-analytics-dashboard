@@ -10,7 +10,8 @@ const WelcomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('../../assets/background.png')}
+        source={{ uri: "https://media1.tenor.com/m/QR_vYEv43U0AAAAC/lawn-mowing.gif" }} 
+        /*source={require('../../assets/background.png')}*/
         style={styles.background}
         resizeMode="cover"
       >
