@@ -1,6 +1,6 @@
 # BOTSQUAD - Text Analytics AI Dashboard
 
-Deployed Webpage: https://text-analytics-dashboard.expo.app
+### Deployed Webpage: https://text-analytics-dashboard.expo.app
 ---
 
 ![BotSquad-Welcome11-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/db29d5a4-ffaa-4761-8798-83f2a8ef9826)
@@ -90,7 +90,9 @@ Deployed the backend on Render: https://text-analytics-dashboard.onrender.com
 
 Deployed the frontend on EAS: https://text-analytics-dashboard--pkenhup8br.expo.app/
   EAS Website: https://docs.expo.dev/build/introduction/
-  
+
+Hosted MySQL database on: sql12.freesqldatabase.com
+Managed by PHPMyAdmin: https://www.phpmyadmin.co/sql.php?server=1&db=sql12759742&table=articles&pos=0
 ```
 cd frontend
 npm install --global eas-cli
