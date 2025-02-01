@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "836a7315-71c0-471c-9745-ce6229505bcd"
+      }
+    },
+    "owner": "chiaminghan",
+    "slug": "text-analytics-dashboard"
+  }
+}

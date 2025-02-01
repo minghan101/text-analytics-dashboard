@@ -16,7 +16,7 @@ export const RecordsList = () => {
   const fetchRecords = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://127.0.0.1:5000/get_records");
+      const response = await axios.get("https://text-analytics-dashboard.onrender.com/get_records");
       setRecords(response.data.records);
       setLoading(false);
     } catch (err) {
@@ -35,7 +35,7 @@ export const RecordsList = () => {
 
   const handleAnalyzeRecord = async (record) => {
     try {
-      const response = await axios.post("http://127.0.0.1:5000/analyze", {
+      const response = await axios.post("https://text-analytics-dashboard.onrender.com/analyze", {
         text: record.Text,
       });
       setAnalyzedData(response.data);

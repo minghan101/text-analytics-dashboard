@@ -10,8 +10,11 @@ export const DiagramsViewer = () => {
     // Function to fetch and update image URLs
     const fetchImages = async () => {
       const timestamp = new Date().getTime(); // To prevent caching
-      setDiagramUrl(`http://127.0.0.1:5000/static/diagram.png?${timestamp}`);
-      setNetworkGraphUrl(`http://127.0.0.1:5000/static/network_graph.png?${timestamp}`);
+      
+      setDiagramUrl(`https://text-analytics-dashboard.onrender.com/static/diagram.png?${timestamp}`);
+      setNetworkGraphUrl(`https://text-analytics-dashboard.onrender.com/static/network_graph.png?${timestamp}`);
+      //setDiagramUrl(`http://127.0.0.1:5000/static/diagram.png?${timestamp}`);
+      //setNetworkGraphUrl(`http://127.0.0.1:5000/static/network_graph.png?${timestamp}`);
     };
 
     // Initial fetch for images
