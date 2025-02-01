@@ -1,29 +1,32 @@
 @startuml
-entity "Meta" {
-    +fine: €1.2 billion
-    +reason: violating EU privacy laws
+entity "Starbucks" {
+    +name: String
+    +industry: String
 }
 
-entity "European Union Regulators" {
-    +announcement: statement
+entity "Employee" {
+    +name: String
+    +unionStatus: String
 }
 
-entity "Facebook" {
-    +data: personal data of users
+entity "NLRB" {
+    +name: String
+    +decisionDate: Date
 }
 
-entity "Irish Data Protection Commission" {
-    +role: chief regulator
+entity "LaborLawViolation" {
+    +violationType: String
+    +date: Date
 }
 
-entity "General Data Protection Regulation" {
-    +chapter: Chapter 5
-    +conditions: transfer of personal data
+entity "Judge" {
+    +name: String
 }
 
-Meta o-> "European Union Regulators" : fined by
-"European Union Regulators" o-> "Facebook" : inquiry into
-"Irish Data Protection Commission" o-> Meta : oversees
-"General Data Protection Regulation" o-> "Meta" : contravened by
-"General Data Protection Regulation" o-> "Facebook" : conditions set for transfer
+Starbucks o-- "1..*" Employee : employs
+Starbucks o-> "0..*" LaborLawViolation : has
+NLRB o-> "0..*" LaborLawViolation : rulesOn
+NLRB o-> "1" Judge : presidesOver
+Judge o-> "1..*" LaborLawViolation : adjudicates
+Employee o-> "1" LaborLawViolation : affectedBy
 @enduml

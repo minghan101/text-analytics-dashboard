@@ -5,7 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import json
 from graphviz import Digraph
-from env import OPEN_AI_API_KEY, DB_URL
+#from env import OPEN_AI_API_KEY, DB_URL
 from plantuml import PlantUML
 import os
 from PyPDF2 import PdfReader
@@ -14,6 +14,11 @@ import pandas as pd
 from excel_upload import upload_excels_to_db
 from sqlalchemy import create_engine
 from flask_cors import CORS
+from dotenv import load_dotenv
+
+load_dotenv()
+OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
+db_url = os.getenv("DB_URL")
 
 # Flask app configuration
 app = Flask(__name__, static_folder="static")
@@ -21,8 +26,6 @@ CORS(app)  # enable CORS for all routes
 app.config['UPLOAD_FOLDER'] = './uploads'
 ALLOWED_EXTENSIONS = {'pdf', 'txt', 'xlsx'}
 matplotlib.use('Agg')
-
-db_url = DB_URL
 
 # Creating new OpenAI Object using API Key
 client = OpenAI(
