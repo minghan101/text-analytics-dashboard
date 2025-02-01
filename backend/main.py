@@ -16,6 +16,8 @@ from sqlalchemy import create_engine
 from flask_cors import CORS
 from dotenv import load_dotenv
 
+#pip freeze > requirements.txt
+
 load_dotenv()
 OPEN_AI_API_KEY = os.getenv("OPEN_AI_API_KEY")
 db_url = os.getenv("DB_URL")
