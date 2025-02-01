@@ -442,7 +442,9 @@ def analyze_text():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    PORT = int(os.environ.get("PORT", 5000))  # Default to 5000 if PORT is not set
+    app.run(host="0.0.0.0", port=PORT, debug=True)
+    #app.run(debug=True)
 
 #********FOR TESTING THEN UNCOMMENT ONLY*******
 '''
