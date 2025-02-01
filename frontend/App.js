@@ -34,7 +34,7 @@ export default function App() {
           headerShown: false, 
           cardStyle: { flex: 1 } // Ensure the stack navigator takes up the full screen
         }}
-        initialRouteName="Upload"
+        initialRouteName="Welcome"
       >
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
         <Stack.Screen name="Upload" component={UploadScreen} />

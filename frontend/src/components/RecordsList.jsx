@@ -145,9 +145,9 @@ export const RecordsList = () => {
             <p style={styles.modalText}>{selectedRecord.Text}</p>
             <TouchableOpacity
               onPress={handleCloseDetails}
-              style={styles.modalCloseButton}
+              style={styles.modalCloseIcon}
             >
-              <Text style={styles.buttonText}>Close</Text>
+              <Text style={styles.closeIconText}>❌</Text>
             </TouchableOpacity>
           </div>
         </div>
@@ -161,9 +161,9 @@ export const RecordsList = () => {
             <pre style={styles.modalText}>{JSON.stringify(analyzedData, null, 2)}</pre>
             <TouchableOpacity
               onPress={handleCloseAnalysis}
-              style={styles.modalCloseButton}
+              style={styles.modalCloseIcon}
             >
-              <Text style={styles.buttonText}>Close</Text>
+              <Text style={styles.closeIconText}>❌</Text>
             </TouchableOpacity>
           </div>
         </div>
@@ -301,6 +301,21 @@ const styles = {
     cursor: 'pointer',
     border: 'none',
     marginTop: '20px',
+  },
+  modalCloseIcon: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: colors.neonred,
+    padding: 5,
+    borderRadius: 50,
+    cursor: 'pointer',
+  },
+  
+  closeIconText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
   },
 };
 

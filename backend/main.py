@@ -273,7 +273,7 @@ def upload_file():
             print(f"Error during processing: {e}")  # Debug log
             return jsonify({"error": str(e)}), 500
 
-    return jsonify({"error": "Invalid file type"}), 400
+    return jsonify({"error": "Invalid file type. Refresh Page"}), 400
 
 # Parse GPT response
 def parse_gpt_response(response):

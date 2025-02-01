@@ -1,56 +1,29 @@
 @startuml
-entity "Investigation Task Force" as ITF {
-    +name: String
-    +caseNumber: String
+entity "Meta" {
+    +fine: €1.2 billion
+    +reason: violating EU privacy laws
 }
 
-entity "United Nations" as UN {
-    +name: String
+entity "European Union Regulators" {
+    +announcement: statement
 }
 
-entity "Prishtina International Airport" as PIA {
-    +name: String
+entity "Facebook" {
+    +data: personal data of users
 }
 
-entity "Air Traffic Control Services" as ATCS {
-    +name: String
-    +accountBalance: Float
+entity "Irish Data Protection Commission" {
+    +role: chief regulator
 }
 
-entity "Public Enterprise Airport Prishtina" as PEAP {
-    +name: String
+entity "General Data Protection Regulation" {
+    +chapter: Chapter 5
+    +conditions: transfer of personal data
 }
 
-entity "Kosovo Trust Agency" as KTA {
-    +name: String
-}
-
-entity "Division Manager" as DM {
-    +name: String
-}
-
-entity "Finance Officer" as FO {
-    +name: String
-    +position: String
-}
-
-entity "Official" as O {
-    +name: String
-}
-
-entity "Forensic Audit Report" as FAR {
-    +reportDate: Date
-}
-
-ITF -> UN : "is part of"
-ITF -> ATCS : "investigates"
-ATCS o-> PIA : "operates at"
-ATCS o-> PEAP : "is audited by"
-KTA o-> PIA : "oversees"
-KTA o-> ATCS : "manages"
-DM o-> ATCS : "supervises"
-FO o-> ATCS : "works in"
-FO o-> DM : "reports to"
-O o-> PIA : "works at"
-FAR -> ATCS : "audits"
+Meta o-> "European Union Regulators" : fined by
+"European Union Regulators" o-> "Facebook" : inquiry into
+"Irish Data Protection Commission" o-> Meta : oversees
+"General Data Protection Regulation" o-> "Meta" : contravened by
+"General Data Protection Regulation" o-> "Facebook" : conditions set for transfer
 @enduml
