@@ -1,5 +1,8 @@
 # BOTSQUAD - Text Analytics AI Dashboard
 
+Deployed Webpage: https://text-analytics-dashboard.expo.app
+---
+
 ![BotSquad-Welcome11-ezgif com-video-to-gif-converter](https://github.com/user-attachments/assets/db29d5a4-ffaa-4761-8798-83f2a8ef9826)
 
 ## Overview
@@ -77,6 +80,25 @@ expo start
 ```
 
 Scan the QR code in the Expo Go app to run on your mobile device. or go to the link provided.
+
+---
+
+---
+## Deployment
+
+Deployed the backend on Render: https://text-analytics-dashboard.onrender.com
+
+Deployed the frontend on EAS: https://text-analytics-dashboard--pkenhup8br.expo.app/
+  EAS Website: https://docs.expo.dev/build/introduction/
+  
+```
+cd frontend
+npm install --global eas-cli
+eas init --id 836a7315-71c0-471c-9745-ce6229505bcd
+npx expo export --platform web
+eas deploy
+eas deploy --prod
+```
 
 ---
 
