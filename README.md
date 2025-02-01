@@ -1,6 +1,7 @@
 # BOTSQUAD - Text Analytics AI Dashboard
 
-<img width="1127" alt="image" src="https://github.com/user-attachments/assets/4f3816a7-ca10-41f0-bc14-aa2ff39671df" />
+https://github.com/user-attachments/assets/d52d2a12-bd3d-47b7-8117-92dad8f19aeb
+
 
 ## Overview
 Text-Analytics-AI-Dashboard is an interactive AI-powered dashboard that allows users to upload and analyze text datasets with ease. The project includes a React Native frontend for seamless user interaction and a Python backend for processing the uploaded data.
